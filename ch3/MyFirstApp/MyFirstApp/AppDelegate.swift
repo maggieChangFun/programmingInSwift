@@ -2,7 +2,7 @@
 //  AppDelegate.swift
 //  MyFirstApp
 //
-//  Created by 張芷瑄 on 2019/1/2.
+//  Created by maggieChang on 2019/1/2.
 //  Copyright © 2019 MaggieChang. All rights reserved.
 //
 

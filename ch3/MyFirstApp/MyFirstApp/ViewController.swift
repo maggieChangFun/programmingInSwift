@@ -2,7 +2,7 @@
 //  ViewController.swift
 //  MyFirstApp
 //
-//  Created by 張芷瑄 on 2019/1/2.
+//  Created by maggieChang on 2019/1/2.
 //  Copyright © 2019 MaggieChang. All rights reserved.
 //
 
@@ -34,6 +34,8 @@ class ViewController: UIViewController {
             let alertController = UIAlertController(title: "Welcome to My First App", message: emojiDict[meaning!], preferredStyle: UIAlertController.Style.alert)
             
             alertController.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
+            
+            //顯示訊息
             present(alertController, animated: true, completion: nil)
         }
     }
