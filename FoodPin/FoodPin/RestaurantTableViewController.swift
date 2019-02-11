@@ -14,6 +14,7 @@ class RestaurantTableViewController: UITableViewController {
     
     var restaurantImages = ["cafedeadend","homei","teakha","cafeloisl","petiteoyster","forkeerestaurant","posatelier","bourkestreetbakery","haighschocolate","palominoespresso","upstate","traif","grahamavenuemeats","wafflewolf","fiveleaves","cafelore","confessional","barrafina","donostia","royaloak","caskpubkitchen"]
     
+    var restaurantIsVisited = [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
     //表格列要顯示時會被呼叫
    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cellIdentifier = "mag"
@@ -25,12 +26,62 @@ class RestaurantTableViewController: UITableViewController {
         //cell.textLabel?.text => 文字標籤要顯示的文字
         cell.nameLabel.text = restaurantNames[indexPath.row]
         cell.thumbnailImageView.image = UIImage(named: restaurantImages[indexPath.row])
-        
+    
+        //檢查餐廳是否有被勾選起來，true->顯示打勾，false->不顯示打勾
+        //        if restaurantIsVisited[indexPath.row]{
+        //            cell.accessoryType = .checkmark
+        //        }else{
+        //            cell.accessoryType = .none
+        //        }
+        //三元運算子
+        cell.accessoryType = restaurantIsVisited[indexPath.row] ? .checkmark :.none
+    
         return cell
     }
     
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        //建立一個選單作為動作清單
+        let optionMenu = UIAlertController(title: nil, message: "What do you want to do?", preferredStyle: .alert)
+        
+        //加入動作至選單中
+        let cancelMenu = UIAlertAction(title: "cancel", style: .cancel, handler: nil)
+        optionMenu.addAction(cancelMenu)
+        
+ 
+        
+        //加入打電話的動作
+        //「閉包」closure：將程式碼區塊當做值。通常是包覆在一對大括號內。
+        let callActionHandler = { (action:UIAlertAction!) //閉包的參數與回傳型態
+            -> Void in //in關鍵字指示閉包本體的開始位置
+            let alertMessage = UIAlertController(title: "Service Unavailable", message:"Sorry, the call feature is not available yet. Please retry later.", preferredStyle: .alert)
+            
+            alertMessage.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            self.present(alertMessage,animated: true,completion: nil)
+        }
+        let callAction = UIAlertAction(title: "Call"+"123-000-\(indexPath.row)", style: .default, handler: callActionHandler)
+        
+        optionMenu.addAction(callAction)
+        
+        //加入打卡動作
+        let checkInAction = UIAlertAction(title: "Check in", style: .default, handler: {
+            (action:UIAlertAction!)-> Void in
+            
+            let cell = tableView.cellForRow(at: indexPath) //indexPath -> 所選取的寶表格cell與索引值
+            cell?.accessoryType = .checkmark //檢查cell是否存在，如果存在的話可以允許設定accessoryType
+            self.restaurantIsVisited[indexPath.row] = true
+        })
+        optionMenu.addAction(checkInAction)
+        
+        //呈現選單
+        present(optionMenu,animated: true,completion: nil)
+        //取消列的選取
+        tableView.deselectRow(at: indexPath, animated: false)
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
+        //自動調整cell的寬度
+        tableView.cellLayoutMarginsFollowReadableWidth = true
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
