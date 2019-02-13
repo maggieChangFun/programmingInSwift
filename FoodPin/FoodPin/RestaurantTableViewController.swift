@@ -78,6 +78,7 @@ class RestaurantTableViewController: UITableViewController {
         //取消列的選取
         tableView.deselectRow(at: indexPath, animated: false)
     }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         //自動調整cell的寬度
@@ -89,6 +90,74 @@ class RestaurantTableViewController: UITableViewController {
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
+    
+    //滑動刪除功能
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete{
+            //使用remove(at:)從資料源刪除列
+            restaurantNames.remove(at: indexPath.row)
+            restaurantIsVisited.remove(at: indexPath.row)
+            restaurantImages.remove(at: indexPath.row)
+        }
+        
+        //重新載入頁面
+        //tableView.reloadData()
+        tableView.deleteRows(at: [indexPath], with: .fade)//fade是刪除陣列的動畫方式
+        
+        //除錯
+        print("Total item:\(restaurantNames.count)")
+        for name in restaurantNames{
+            print(name)
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        //建立刪除動作
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete"){(action,sourceView,completionHandler) in
+            self.restaurantNames.remove(at: indexPath.row)
+            self.restaurantImages.remove(at: indexPath.row)
+            self.restaurantIsVisited.remove(at: indexPath.row)
+            
+            
+            self.tableView.deleteRows(at: [indexPath], with: .fade)
+            
+            //呼叫完成就處理器來取消動作按鈕
+            completionHandler(true)
+        }
+        
+        let shareAction = UIContextualAction(style: .normal, title: "Share"){(action,sourceView,completionHandler) in
+            let defaultText = "Just checking in at " + self.restaurantNames[indexPath.row]
+            
+            
+//            let activityController = UIActivityViewController(activityItems: [defaultText], applicationActivities: nil)
+//            self.present(activityController,animated: true, completion: nil)
+//            completionHandler(true)
+            
+            let activityController : UIActivityViewController
+            
+            if let imageToShare = UIImage(named: self.restaurantImages[indexPath.row]){
+                activityController = UIActivityViewController(activityItems: [defaultText,imageToShare], applicationActivities: nil)
+            }else{
+                activityController = UIActivityViewController(activityItems: [defaultText], applicationActivities: nil)
+                
+                completionHandler(true)
+            }
+            
+            self.present(activityController,animated: true,completion: nil)
+            completionHandler(true)
+        }
+        
+        deleteAction.backgroundColor = UIColor(red: 231.0/255.0, green: 76.0/255.0, blue: 60.0/255.0, alpha: 1.0)
+        deleteAction.image = UIImage(named: "delete")
+        
+        shareAction.backgroundColor = UIColor(red: 254.0/255.0, green: 149.0/255.0, blue: 38.0/255.0, alpha: 1.0)
+        shareAction.image = UIImage(named: "share")
+        
+        let swipeConfiguration = UISwipeActionsConfiguration(actions: [deleteAction,shareAction])
+        
+        return swipeConfiguration
+}
 
     // MARK: - Table view data source
 
